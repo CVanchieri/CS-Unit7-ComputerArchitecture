@@ -1,11 +1,16 @@
+from os import popen
 import sys
-
+#                   AABCDDDD
 PRINT_TIM       = 0b00000001
 HALT            = 0b00000010
 PRINT_NUM       = 0b01000011
-SAVE            = 0b10000100
+SAVE            = 0b10000100 # LDI 
 PRINT_REGISTER  = 0b01000101
-ADD             = 0b10000110
+ADD             = 0b10100110
+PUSH            = 0b01000111
+POP             = 0b01001000
+
+# is_alu_op = (command >> 5) & 0b001 == 1
 
 memory = [0] * 256
 
@@ -59,8 +64,12 @@ HALT
 # registers
 # physically located on CPU, treat as variables 
 
+
+
 # R0-R7
 registers = [0] * 8
+registers[7] = 0xF4
+
 
 # cpu should now step through memory and take actions based on commands it finds
 
@@ -69,6 +78,26 @@ registers = [0] * 8
 # program counter 
 pc = 0
 running = True 
+
+# where to start our stack 
+# 
+class Stack: # stack class
+    def __init__(self): # initializer constructor method
+        self.size = 0 # set size to 0
+        self.items = [] # set storage items to empty list
+
+    def __len__(self): # method to show the length
+        return self.size
+
+    def push(self, value): # method to add a value
+        self.items.append(value) # append the value to items list
+        self.size += 1 # add 1 to the length
+
+    def pop(self): # method to remove a value
+        if self.items != []: # if items list is not empty
+            self.size -= 1 # remove 1 from the length
+            return self.items.pop()
+
 
 while running:
     command = memory[pc]
@@ -113,6 +142,28 @@ while running:
     elif command == HALT:
         running = False
 
+    elif command == PUSH: 
+        # get a value
+
+        # where is the SP
+        registers[7] -= 1
+        # decrement SP
+
+        # copy value in given register adress pointed by SP 
+        reg_idx = memory[pc + 1]
+        value = registers[reg_idx]
+        SP = registers[7]
+        memory[SP] = value
+
+    elif command == POP:
+        # copy address from pointer 
+        SP = registers[7]
+
+        value = memory[SP]
+        # get value from address 
+        # put the value in register  
+
+        pass
     else:
         print('Commmand not known!')
         running = False

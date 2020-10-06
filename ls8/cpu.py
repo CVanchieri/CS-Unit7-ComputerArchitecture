@@ -119,5 +119,46 @@ class CPU:
                 self.reg[self.ram[self.pc + 1]] = reg_num1 * reg_num2
                 self.pc += 3
 
+'''
+class Stack: # stack class
+    def __init__(self): # initializer constructor method
+        self.size = 0 # set size to 0
+        self.items = [] # set storage items to empty list
 
+    def __len__(self): # method to show the length
+        return self.size
 
+    def push(self, value): # method to add a value
+        self.items.append(value) # append the value to items list
+        self.size += 1 # add 1 to the length
+
+    def pop(self): # method to remove a value
+        if self.items != []: # if items list is not empty
+            self.size -= 1 # remove 1 from the length
+            return self.items.pop()
+
+class Stack:
+    #Constructor
+    def __init__(self):
+        self.stack = list()
+        self.maxSize = 8
+        self.top = 0
+    #Adds element to the Stack
+    def push(self,data):
+        if self.top>=self.maxSize:
+            return ("Stack Full!")
+        self.stack.append(data)
+        self.top += 1
+        return True
+    #Removes element from the stack
+    def pop(self):
+        if self.top<=0:
+            return ("Stack Empty!")
+        item = self.stack.pop()
+        self.top -= 1
+        return item
+       
+    #Size of the stack
+    def size(self):
+        return self.top
+'''
