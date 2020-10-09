@@ -1,11 +1,17 @@
 """CPU functionality."""
+# imnports
 import sys
+
+### OPCODES ###
 LDI     = 0b10000010
 PRN     = 0b01000111
 HLT     = 0b00000001
 MUL     = 0b10100010
 POP     = 0b01000110
 PUSH    = 0b01000101
+CALL    = 0b01010000
+RET     = 0b00010001
+ADD     = 0b10100000
 
 class CPU:
     """Main CPU class."""
@@ -27,6 +33,9 @@ class CPU:
             MUL: self.oper_mul,
             POP: self.oper_pop,
             PUSH: self.oper_push,
+            CALL: self.oper_call,
+            RET: self.oper_ret,
+            ADD: self.oper_add,
             }
 
     """branch table operations"""
@@ -60,25 +69,43 @@ class CPU:
     def oper_push(self, oper_a, oper_b):
         self.push_val(self.reg[oper_a])
 
+    ### CALL operation ###
+    # the address after `CALL` is pushed onto the stack to return after, PC is set to the address stored in the register,jump to that location and execute execute subroutine
+    def oper_call(self, oper_a, oper_b):
+        # Pushing next instruction to stack
+        self.push_val(self.pc + 2)
+        # Setting pc to address of subroutine
+        self.pc = self.reg[oper_a]
+
+    ### RET operation ###
+    # pop the value from the top of the stack and store it in the `PC`
+    def oper_ret(self, oper_a, oper_b):
+        self.pc = self.pop_val() # pop the value off top of stack
+
+    ### ADD operation ###
+    # add the value in two registers and store the result in registerA
+    def oper_add(self, oper_a, oper_b):
+        self.alu("ADD", oper_a, oper_b)
+
     """CPU methods"""
     ### ram_read method ###
     # ram_read() should accept the address to read and return the value stored there 
     def ram_read(self, mar):
-        address = self.ram[mar]
-        return address
+        mdr = self.ram[mar]
+        return mdr
 
     ### ram_write method ###
     # ram_write() should accept a value to write, and the address to write it to
     def ram_write(self, mdr, mar):
         self.ram[mar] = mdr
 
-    ### push method ###
+    ### PUSH method ###
     # decrement the SP, push the value stored in register to the address of the SP
     def push_val(self, val):
         self.reg[self.SP] -= 1
         self.ram_write(val, self.reg[self.SP])
 
-    ### pop method ###
+    ### POP method ###
     # pop the value at the top of the stack into the given register, Copy the value, increment SP
     def pop_val(self):
         val = self.ram_read(self.reg[self.SP])
